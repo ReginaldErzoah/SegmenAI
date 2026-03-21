@@ -3,12 +3,13 @@ import numpy as np
 from datetime import datetime
 import warnings
 import joblib
-warnings.filterwarnings("ignore")
-
-from sklearn.metrics import silhouette_score
 import streamlit as st
 import plotly.express as px
+import boto3
+from io import BytesIO
 
+warnings.filterwarnings("ignore")
+from sklearn.metrics import silhouette_score
 
 st.set_page_config(page_title="SegmenAI - Customer Segmentation", layout="wide")
 st.title("SegmenAI - Customer Segmentation Dashboard")
@@ -17,24 +18,45 @@ Analyze your customer base using **RFM segmentation** and **KMeans clustering**.
 Use the interactive charts to explore segments and understand customer behavior.
 """)
 
-# Upload CSV
+# ------------------------
+# Upload CSV or load from MinIO
+# ------------------------
 uploaded_file = st.file_uploader("Upload your customer data CSV", type=["csv"])
+
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
 else:
-    st.info("Using default dataset: customerdata.csv")
-    df = pd.read_csv("customerdata.csv", parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
+    try:
+        st.info("Using default dataset from MinIO: customerdata.csv")
+        # Connect to MinIO
+        s3 = boto3.client(
+            's3',
+            endpoint_url='http://minio:9000',  # Docker container hostname
+            aws_access_key_id='minioadmin',
+            aws_secret_access_key='minioadmin'
+        )
 
+        bucket_name = 'segmenai-bucket'
+        file_name = 'customerdata.csv'
 
+        obj = s3.get_object(Bucket=bucket_name, Key=file_name)
+        df = pd.read_csv(BytesIO(obj['Body'].read()), parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
+    except Exception as e:
+        st.error(f"Could not load default dataset: {e}")
+        st.stop()  # Stop app if no data is available
+
+# ------------------------
 # Load pre-trained model & scaler
+# ------------------------
 MODEL_PATH = "models/kmeans_rfm.pkl"
 SCALER_PATH = "models/scaler_rfm.pkl"
 
 kmeans = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
 
-
+# ------------------------
 # RFM Feature Engineering
+# ------------------------
 df['TotalAmount'] = df['Quantity'] * df['UnitPrice']
 snapshot_date = df['InvoiceDate'].max() + pd.Timedelta(days=1)
 
@@ -46,12 +68,11 @@ rfm = df.groupby('CustomerID').agg({
 
 rfm.rename(columns={'InvoiceDate':'Recency','InvoiceNo':'Frequency','TotalAmount':'Monetary'}, inplace=True)
 
-
-# Transform features with saved scaler & predict segments
+# Transform features & predict segments
 X_scaled = scaler.transform(rfm[['Recency','Frequency','Monetary']])
 rfm['Segment'] = kmeans.predict(X_scaled)
 
-# Add Descriptive Segment Labels
+# Descriptive Segment Labels
 segment_labels = {
     0: "High-Value Loyal",
     1: "Inactive Low-Value",
@@ -60,11 +81,11 @@ segment_labels = {
 }
 rfm['Segment_Description'] = rfm['Segment'].map(segment_labels)
 
-
-# Silhouette Score
+# ------------------------
+# Metrics & Visualizations
+# ------------------------
 st.metric("Silhouette Score", f"{silhouette_score(X_scaled, rfm['Segment']):.2f}")
 
-# Visualizations
 # 1. Customer Count per Segment
 st.subheader("Customer Count per Segment")
 fig_count = px.histogram(
