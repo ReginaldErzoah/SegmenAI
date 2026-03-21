@@ -46,8 +46,10 @@ desktop.ini
 crash.log
 
 # ---------------------------
-# Docker
+# Docker / MinIO
 # ---------------------------
+minio_data/
+localminio/.minio.sys/
 *.log
 *.pid
 docker-compose.override.yml
