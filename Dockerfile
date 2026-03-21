@@ -17,5 +17,10 @@ COPY . .
 # Expose Streamlit port
 EXPOSE 8501
 
+# Set environment variables for MinIO
+ENV MINIO_ENDPOINT=http://minio:9000
+ENV MINIO_ACCESS_KEY=minioadmin
+ENV MINIO_SECRET_KEY=minioadmin
+
 # Command to run Streamlit app
 CMD ["streamlit", "run", "segmenai.py", "--server.port=8501", "--server.address=0.0.0.0"]

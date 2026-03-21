@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -7,10 +8,13 @@ import streamlit as st
 import plotly.express as px
 import boto3
 from io import BytesIO
-
-warnings.filterwarnings("ignore")
 from sklearn.metrics import silhouette_score
 
+warnings.filterwarnings("ignore")
+
+# ------------------------
+# Streamlit page setup
+# ------------------------
 st.set_page_config(page_title="SegmenAI - Customer Segmentation", layout="wide")
 st.title("SegmenAI - Customer Segmentation Dashboard")
 st.markdown("""
@@ -27,22 +31,39 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
 else:
     try:
-        st.info("Using default dataset from MinIO: customerdata.csv")
-        # Connect to MinIO
+        st.info("Using default dataset from MinIO")
+
+        # Connect to MinIO using environment variables
         s3 = boto3.client(
             's3',
-            endpoint_url='http://minio:9000',  # Docker container hostname
-            aws_access_key_id='minioadmin',
-            aws_secret_access_key='minioadmin'
+            endpoint_url=os.getenv("MINIO_ENDPOINT", "http://127.0.0.1:9000"),
+            aws_access_key_id=os.getenv("MINIO_ACCESS_KEY", "minioadmin"),
+            aws_secret_access_key=os.getenv("MINIO_SECRET_KEY", "minioadmin")
         )
 
+        # Bucket name
         bucket_name = 'segmenai-bucket'
-        file_name = 'customerdata.csv'
 
+        # List CSV files dynamically
+        objects = s3.list_objects_v2(Bucket=bucket_name)
+        if 'Contents' not in objects:
+            raise Exception(f"No objects found in bucket {bucket_name}")
+
+        file_name = None
+        for obj_item in objects['Contents']:
+            if obj_item['Key'].lower().endswith('.csv'):
+                file_name = obj_item['Key']
+                break
+
+        if file_name is None:
+            raise Exception(f"No CSV file found in bucket {bucket_name}")
+
+        # Read CSV from MinIO
         obj = s3.get_object(Bucket=bucket_name, Key=file_name)
         df = pd.read_csv(BytesIO(obj['Body'].read()), parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
+
     except Exception as e:
-        st.error(f"Could not load default dataset: {e}")
+        st.error(f"Could not load default dataset from MinIO: {e}")
         st.stop()  # Stop app if no data is available
 
 # ------------------------
@@ -86,7 +107,7 @@ rfm['Segment_Description'] = rfm['Segment'].map(segment_labels)
 # ------------------------
 st.metric("Silhouette Score", f"{silhouette_score(X_scaled, rfm['Segment']):.2f}")
 
-# 1. Customer Count per Segment
+# Customer Count per Segment
 st.subheader("Customer Count per Segment")
 fig_count = px.histogram(
     rfm, x='Segment_Description', color='Segment_Description',
@@ -95,7 +116,7 @@ fig_count = px.histogram(
 )
 st.plotly_chart(fig_count, use_container_width=True)
 
-# 2. Monetary Contribution per Segment
+# Monetary Contribution per Segment
 st.subheader("Monetary Contribution per Segment")
 monetary_per_segment = rfm.groupby('Segment_Description')['Monetary'].sum().reset_index()
 fig_monetary = px.bar(
@@ -107,7 +128,7 @@ fig_monetary = px.bar(
 fig_monetary.update_traces(texttemplate='%{text:,.2f}', textposition='outside')
 st.plotly_chart(fig_monetary, use_container_width=True)
 
-# 3. Average Recency per Segment
+# Average Recency per Segment
 st.subheader("Average Recency per Segment")
 recency_per_segment = rfm.groupby('Segment_Description')['Recency'].mean().reset_index()
 fig_recency = px.bar(
@@ -119,7 +140,7 @@ fig_recency = px.bar(
 fig_recency.update_traces(texttemplate='%{text:.1f}', textposition='outside')
 st.plotly_chart(fig_recency, use_container_width=True)
 
-# 4. Average Frequency per Segment
+# Average Frequency per Segment
 st.subheader("Average Frequency per Segment")
 frequency_per_segment = rfm.groupby('Segment_Description')['Frequency'].mean().reset_index()
 fig_frequency = px.bar(
