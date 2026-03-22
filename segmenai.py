@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import warnings
-import joblib
 import streamlit as st
 import plotly.express as px
 import boto3
@@ -80,7 +79,7 @@ try:
         scaler = cloudpickle.load(f)
 except Exception as e:
     st.error(f"Could not load models: {e}")
-    st.stop()  # Stop the app if models cannot be loaded
+    st.stop()  # stop the app if models cannot be loaded
 
 # ------------------------
 # RFM Feature Engineering
