@@ -1,0 +1,5 @@
+cloudflare_email     = "reginalderzoah10@gmail.com"
+cloudflare_api_key   = "cfut_XFVP8CUmtiej669njvGHZNb7kcEphKXRGttUxD9Ta95131bf"
+cloudflare_account_id = "0f1afdc3abba5418f452b37db0c36d08" 
+bucket_name          = "segmenai-bucket"
+local_csv_path       = ""C:\Users\reginald.erzoah\OneDrive - Koa Impact\Desktop\Resources\Python Practice\SegmenAI\customerdata.csv""
