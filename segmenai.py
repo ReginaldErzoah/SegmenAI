@@ -25,46 +25,36 @@ Use the interactive charts to explore segments and understand customer behavior.
 # ------------------------
 # Upload CSV or load from MinIO
 # ------------------------
-uploaded_file = st.file_uploader("Upload your customer data CSV", type=["csv"])
+try:
+    st.info("Loading dataset from MinIO")
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file, parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
-else:
-    try:
-        st.info("Using default dataset from MinIO")
+    # Connect to MinIO using environment variables
+    s3 = boto3.client(
+        's3',
+        endpoint_url=os.getenv("MINIO_ENDPOINT", "http://localhost:9000"),
+        aws_access_key_id=os.getenv("MINIO_ACCESS_KEY", "minioadmin"),
+        aws_secret_access_key=os.getenv("MINIO_SECRET_KEY", "minioadmin")
+    )
 
-        # Connect to MinIO using environment variables
-        s3 = boto3.client(
-            's3',
-            endpoint_url=os.getenv("MINIO_ENDPOINT", "http://localhost:9000"),
-            aws_access_key_id=os.getenv("MINIO_ACCESS_KEY", "minioadmin"),
-            aws_secret_access_key=os.getenv("MINIO_SECRET_KEY", "minioadmin")
-        )
+    bucket_name = 'segmenai-bucket'
 
-        # Bucket name
-        bucket_name = 'segmenai-bucket'
+    # List CSV files in bucket
+    objects = s3.list_objects_v2(Bucket=bucket_name)
+    if 'Contents' not in objects:
+        raise Exception(f"No objects found in bucket {bucket_name}")
 
-        # List CSV files dynamically
-        objects = s3.list_objects_v2(Bucket=bucket_name)
-        if 'Contents' not in objects:
-            raise Exception(f"No objects found in bucket {bucket_name}")
+    # Pick first CSV file
+    file_name = next((obj['Key'] for obj in objects['Contents'] if obj['Key'].lower().endswith('.csv')), None)
+    if file_name is None:
+        raise Exception(f"No CSV file found in bucket {bucket_name}")
 
-        file_name = None
-        for obj_item in objects['Contents']:
-            if obj_item['Key'].lower().endswith('.csv'):
-                file_name = obj_item['Key']
-                break
+    # Read CSV
+    obj = s3.get_object(Bucket=bucket_name, Key=file_name)
+    df = pd.read_csv(BytesIO(obj['Body'].read()), parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
 
-        if file_name is None:
-            raise Exception(f"No CSV file found in bucket {bucket_name}")
-
-        # Read CSV from MinIO
-        obj = s3.get_object(Bucket=bucket_name, Key=file_name)
-        df = pd.read_csv(BytesIO(obj['Body'].read()), parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
-
-    except Exception as e:
-        st.error(f"Could not load default dataset from MinIO: {e}")
-        st.stop()  # Stop app if no data is available
+except Exception as e:
+    st.error(f"Could not load dataset from MinIO: {e}")
+    st.stop()
 
 # ------------------------
 # Load pre-trained model & scaler
