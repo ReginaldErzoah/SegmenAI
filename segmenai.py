@@ -160,4 +160,6 @@ st.plotly_chart(fig_frequency, use_container_width=True)
 # Interactive Customer Table
 st.subheader("View Customers by Segment")
 selected_segment = st.selectbox("Select a Segment", rfm['Segment_Description'].unique())
-st.dataframe(rfm[rfm['Segment_Description'] == selected_segment].reset_index(drop=True))
+st.dataframe(
+    rfm[rfm['Segment_Description'] == selected_segment][['CustomerID','Recency','Frequency','Monetary','Segment_Description','Recommendation']].reset_index(drop=True)
+)
