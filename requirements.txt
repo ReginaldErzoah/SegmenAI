@@ -1,6 +1,5 @@
 # Build tools
 setuptools>=70.0.0
-wheel>=1.0.0
 
 # Data manipulation
 pandas==2.0.3
