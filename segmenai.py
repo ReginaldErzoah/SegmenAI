@@ -1,4 +1,5 @@
 import os
+import cloudpickle
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -72,8 +73,14 @@ else:
 MODEL_PATH = "models/kmeans_rfm.pkl"
 SCALER_PATH = "models/scaler_rfm.pkl"
 
-kmeans = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
+try:
+    with open(MODEL_PATH, "rb") as f:
+        kmeans = cloudpickle.load(f)
+    with open(SCALER_PATH, "rb") as f:
+        scaler = cloudpickle.load(f)
+except Exception as e:
+    st.error(f"Could not load models: {e}")
+    st.stop()  # Stop the app if models cannot be loaded
 
 # ------------------------
 # RFM Feature Engineering
