@@ -36,7 +36,7 @@ else:
         # Connect to MinIO using environment variables
         s3 = boto3.client(
             's3',
-            endpoint_url=os.getenv("MINIO_ENDPOINT", "http://127.0.0.1:9000"),
+            endpoint_url=os.getenv("MINIO_ENDPOINT", "http://minio:9000"),
             aws_access_key_id=os.getenv("MINIO_ACCESS_KEY", "minioadmin"),
             aws_secret_access_key=os.getenv("MINIO_SECRET_KEY", "minioadmin")
         )
