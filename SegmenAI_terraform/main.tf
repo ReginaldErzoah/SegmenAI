@@ -27,8 +27,8 @@ provider "aws" {
 
 # Reference existing bucket
 data "cloudflare_r2_bucket" "existing_bucket" {
-  name    = var.bucket_name
-  zone_id = var.cloudflare_account_id
+  account_id  = var.cloudflare_account_id
+  bucket_name = var.bucket_name
 }
 
 # Upload new customer data CSV
