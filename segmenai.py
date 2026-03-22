@@ -23,20 +23,24 @@ Use the interactive charts to explore segments and understand customer behavior.
 """)
 
 # ------------------------
-# Upload CSV or load from MinIO
+# Load dataset from Cloudflare R2 using Streamlit Secrets
 # ------------------------
 try:
-    st.info("Loading dataset from MinIO")
+    st.info("Loading dataset from Cloudflare R2 bucket")
 
-    # Connect to MinIO using environment variables
+    # Get credentials from Streamlit Secrets
+    endpoint_url = st.secrets["R2_ENDPOINT_URL"]
+    access_key = st.secrets["R2_ACCESS_KEY_ID"]
+    secret_key = st.secrets["R2_SECRET_ACCESS_KEY"]
+    bucket_name = st.secrets["R2_BUCKET_NAME"]
+
+    # Connect to R2
     s3 = boto3.client(
         's3',
-        endpoint_url=os.getenv("MINIO_ENDPOINT", "http://localhost:9000"),
-        aws_access_key_id=os.getenv("MINIO_ACCESS_KEY", "minioadmin"),
-        aws_secret_access_key=os.getenv("MINIO_SECRET_KEY", "minioadmin")
+        endpoint_url=endpoint_url,
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key
     )
-
-    bucket_name = 'segmenai-bucket'
 
     # List CSV files in bucket
     objects = s3.list_objects_v2(Bucket=bucket_name)
@@ -53,7 +57,7 @@ try:
     df = pd.read_csv(BytesIO(obj['Body'].read()), parse_dates=['InvoiceDate'], encoding='ISO-8859-1')
 
 except Exception as e:
-    st.error(f"Could not load dataset from MinIO: {e}")
+    st.error(f"Could not load dataset from Cloudflare R2: {e}")
     st.stop()
 
 # ------------------------
