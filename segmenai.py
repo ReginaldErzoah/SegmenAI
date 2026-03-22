@@ -12,9 +12,8 @@ from sklearn.metrics import silhouette_score
 
 warnings.filterwarnings("ignore")
 
-# ------------------------
+
 # Streamlit page setup
-# ------------------------
 st.set_page_config(page_title="SegmenAI - Customer Segmentation", layout="wide")
 st.title("SegmenAI - Customer Segmentation Dashboard")
 st.markdown("""
@@ -22,9 +21,8 @@ Analyze your customer base using **RFM segmentation** and **KMeans clustering**.
 Use the interactive charts to explore segments and understand customer behavior.
 """)
 
-# ------------------------
+
 # Load dataset from Cloudflare R2 using Streamlit Secrets
-# ------------------------
 try:
     st.info("Loading dataset from Cloudflare R2 bucket")
 
@@ -60,9 +58,8 @@ except Exception as e:
     st.error(f"Could not load dataset from Cloudflare R2: {e}")
     st.stop()
 
-# ------------------------
+
 # Load pre-trained model & scaler
-# ------------------------
 MODEL_PATH = "models/kmeans_rfm.pkl"
 SCALER_PATH = "models/scaler_rfm.pkl"
 
@@ -75,9 +72,8 @@ except Exception as e:
     st.error(f"Could not load models: {e}")
     st.stop()  # stop the app if models cannot be loaded
 
-# ------------------------
+
 # RFM Feature Engineering
-# ------------------------
 df['TotalAmount'] = df['Quantity'] * df['UnitPrice']
 snapshot_date = df['InvoiceDate'].max() + pd.Timedelta(days=1)
 
@@ -102,9 +98,18 @@ segment_labels = {
 }
 rfm['Segment_Description'] = rfm['Segment'].map(segment_labels)
 
-# ------------------------
+# Personalized Recommendations for Segments
+recommendations = {
+    "High-Value Loyal": "Reward with VIP offers, loyalty perks, early access to products.",
+    "Inactive Low-Value": "Send re-engagement campaigns with discounts or reminders.",
+    "Recent Moderate": "Upsell or cross-sell complementary products.",
+    "Occasional Buyer": "Encourage engagement through seasonal campaigns or bundles."
+}
+
+
+rfm['Recommendation'] = rfm['Segment_Description'].map(recommendations)
+
 # Metrics & Visualizations
-# ------------------------
 st.metric("Silhouette Score", f"{silhouette_score(X_scaled, rfm['Segment']):.2f}")
 
 # Customer Count per Segment
