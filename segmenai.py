@@ -29,10 +29,10 @@ try:
     st.info("Loading dataset from Cloudflare R2 bucket")
 
     # Get credentials from Streamlit Secrets
-    endpoint_url = st.secrets["S3_ENDPOINT_URL"]
-    access_key = st.secrets["S3_ACCESS_KEY_ID"]
-    secret_key = st.secrets["S3_SECRET_ACCESS_KEY"]
-    bucket_name = st.secrets["S3_BUCKET_NAME"]
+    endpoint_url = st.secrets["R2_ENDPOINT_URL"]
+    access_key = st.secrets["R2_ACCESS_KEY_ID"]
+    secret_key = st.secrets["R2_SECRET_ACCESS_KEY"]
+    bucket_name = st.secrets["R2_BUCKET_NAME"]
 
     # Connect to R2
     s3 = boto3.client(
