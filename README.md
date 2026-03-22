@@ -83,7 +83,7 @@ Data was initially tested locally using MinIO, an S3-compatible object storage, 
 | Deployment            | Streamlit Cloud, Docker & Docker Compose |
 | Model Persistence     | cloudpickle                              |
 | Notebook Analysis     | Jupyter Notebook                         |
-| Cloud Storage | Cloudflare R2 for Production data hosting , MinIO (S3-compatible) for local testing                   |
+| Cloud Storage | MinIO (S3-compatible) for local testing, Cloudflare R2 for Production data hosting  |
 
 ---
 
