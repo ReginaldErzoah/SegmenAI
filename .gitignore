@@ -43,6 +43,7 @@ desktop.ini
 .terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
+*.terraform.tfvars
 crash.log
 
 # ---------------------------
