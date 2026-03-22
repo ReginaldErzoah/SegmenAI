@@ -94,43 +94,6 @@ Customer CSV Data → Cloudflare R2 → Streamlit App
 4. **Visualization** – Interactive dashboards show segment metrics and customer insights.
 
 ---
-
-## **7. Setup Instructions**
-
-### **Clone Repository**
-
-```bash
-git clone <your-repo-url>
-cd SegmenAI
-```
-
-### **Build Docker Containers**
-
-```bash
-docker-compose up --build
-```
-
-### **Access Dashboard**
-
-* Open your browser at `http://localhost:8501`
-* The Streamlit app will automatically load data from Cloudflare R2.
-
-### **Local Testing (Optional)**
-
-* Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-* Run the app locally:
-
-```bash
-streamlit run segmenai.py
-```
-
----
-
 ## **8. Visualizations & Dashboard**
 
 * **Customer Count per Segment** – Quickly identify segment size.
