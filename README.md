@@ -17,6 +17,7 @@ The project demonstrates:
 * Pandas & NumPy for **data wrangling and numerical computation**
 * Scikit-learn for **KMeans clustering and feature scaling**
 * Streamlit & Plotly for **interactive dashboarding**
+* MinIO for **local storage testing**
 * Cloudflare R2 for **cloud-hosted dataset storage**
 * Docker & Docker Compose for **local development and deployment**
 
