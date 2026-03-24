@@ -44,6 +44,7 @@ This app is ideal for:
 
 * Segment customers into **High-Value Loyal, Inactive Low-Value, Recent Moderate, and Occasional Buyer**
 * Assign descriptive labels to each cluster for easy interpretation
+* Segment Interpretation & Business Logic below for detailed explanation.
 
 **Interactive Visualizations**
 
@@ -56,6 +57,17 @@ This app is ideal for:
 * Efficient clustering using pre-trained **KMeans model** and **feature scaler**
 
 ---
+
+## Segment Interpretation & Business Logic
+
+| Segment                  | RFM Characteristics                                      | Business Logic |
+|--------------------------|----------------------------------------------------------|----------------|
+| High-Value Loyal         | Low Recency, High Frequency, High Monetary              | Most valuable and engaged customers. Focus on retention, loyalty programs, and upselling. |
+| Inactive Low-Value       | High Recency, Low Frequency, Low Monetary               | Disengaged customers with low contribution. Consider re-engagement campaigns or deprioritize. |
+| Recent Moderate          | Low Recency, Moderate Frequency, Moderate Monetary      | Recently active with growth potential. Nurture to convert into loyal high-value customers. |
+| Occasional Buyer         | Moderate Recency, Low Frequency, Low Monetary           | Infrequent buyers. Use promotions and personalized offers to increase engagement and frequency. |
+
+
 
 ## Dataset
 The original dataset was an E-Commerce dataset. [Link](https://www.kaggle.com/datasets/carrie1/ecommerce-data)
