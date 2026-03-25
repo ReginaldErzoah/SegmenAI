@@ -1,6 +1,4 @@
-# ---------------------------
 # Python
-# ---------------------------
 __pycache__/
 *.py[cod]
 *.pyo
@@ -15,29 +13,24 @@ ENV/
 dist/
 build/
 
-# ---------------------------
+
 # Jupyter / Notebooks
-# ---------------------------
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 *.nbconvert.ipynb
 
-# ---------------------------
+
 # VS Code
-# ---------------------------
 .vscode/
 *.code-workspace
 
-# ---------------------------
+
 # OS files
-# ---------------------------
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# ---------------------------
 # Terraform
-# ---------------------------
 *.exe
 .terraform/
 .terraform.lock.hcl
@@ -46,9 +39,7 @@ desktop.ini
 *.terraform.tfvars
 crash.log
 
-# ---------------------------
 # Docker / MinIO
-# ---------------------------
 minio_data/
 localminio/.minio.sys/
 *.log
