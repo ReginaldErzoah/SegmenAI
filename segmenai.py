@@ -89,7 +89,7 @@ rfm.rename(columns={'InvoiceDate':'Recency','InvoiceNo':'Frequency','TotalAmount
 rfm = rfm[rfm['CustomerID'].notnull()]
 
 # Convert CustomerID to integer then string to remove decimals
-rfm['CustomerID'] = df['CustomerID'].apply(lambda x: str(int(x)))
+rfm['CustomerID'] = rfm['CustomerID'].apply(lambda x: str(int(x)))
 
 # Transform features & predict segments
 X_scaled = scaler.transform(rfm[['Recency','Frequency','Monetary']])
