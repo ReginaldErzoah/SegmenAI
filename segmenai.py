@@ -85,15 +85,21 @@ rfm = df.groupby('CustomerID').agg({
 
 rfm.rename(columns={'InvoiceDate':'Recency','InvoiceNo':'Frequency','TotalAmount':'Monetary'}, inplace=True)
 
+# Remove rows with null CustomerID
+rfm = rfm[rfm['CustomerID'].notnull()]
+
+# Convert CustomerID to integer then string to remove decimals
+rfm['CustomerID'] = df['CustomerID'].apply(lambda x: str(int(x)))
+
 # Transform features & predict segments
 X_scaled = scaler.transform(rfm[['Recency','Frequency','Monetary']])
 rfm['Segment'] = kmeans.predict(X_scaled)
 
 # Descriptive Segment Labels
 segment_labels = {
-    0: "High-Value Loyal",
+    0: "Recent Moderate",
     1: "Inactive Low-Value",
-    2: "Recent Moderate",
+    2: "High-Value Loyal",
     3: "Occasional Buyer"
 }
 rfm['Segment_Description'] = rfm['Segment'].map(segment_labels)
