@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 
 # Streamlit page setup
 st.set_page_config(page_title="SegmenAI - Customer Segmentation", layout="wide")
-st.title("SegmenAI - Customer Segmentation Dashboard")
+st.title("SegmenAI - Customer Segmentation System")
 st.markdown("""
 Analyze your customer base using **RFM segmentation** and **KMeans clustering**. 
 Use the interactive charts to explore segments and understand customer behavior.

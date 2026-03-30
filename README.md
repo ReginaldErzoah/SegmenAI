@@ -1,4 +1,4 @@
-# SegmenAI – Customer Segmentation Dashboard
+# SegmenAI – Customer Segmentation System
 
 ## Project Overview
 
